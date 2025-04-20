@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI for Education Chatbot</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #333; /* Dark background */
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: #eee; /* Light text color */
+            flex-direction: column; /* Align items vertically */
+            gap: 10px; /* Spacing between elements */
+        }
+
+        #chat-container {
+            background-color: #222; /* Darker container */
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Adjusted shadow */
+            width: 90%;
+            max-width: 600px;
+            overflow: hidden;
+        }
+
+        #chat-messages {
+            padding: 20px;
+            height: 400px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 15px;
+        }
+
+        .user-message {
+            text-align: right;
+        }
+
+        .bot-message {
+            text-align: left;
+        }
+
+        .message-bubble {
+            background-color: #444; /* Darker bot bubble */
+            border-radius: 10px;
+            padding: 10px 15px;
+            display: inline-block;
+            max-width: 80%;
+        }
+
+        .user-message .message-bubble {
+            background-color: black; /* Black background */
+            color: white; /* White text */
+        }
+
+        .bot-message .message-bubble {
+            color: yellow; /* Yellow text */
+        }
+
+        #user-input {
+            padding: 10px;
+            border: none;
+            border-top: 1px solid #555; /* Darker border */
+            width: calc(100% - 74px);
+            outline: none;
+            background-color: #444; /* Dark input background */
+            color: #eee; /* Light input text */
+        }
+
+        #send-button {
+            background-color: #007bff; /* Blue send button */
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+            width: 50px;
+            height: 41px;
+            float: right;
+            margin-right: 10px;
+        }
+
+        #language-buttons {
+            text-align: center; /* Center the buttons */
+            margin-bottom: 10px; /* Add some space below */
+        }
+
+        #language-buttons button {
+            background-color: #555; /* Grayish button background */
+            color: #eee; /* Light button text */
+            border: none;
+            padding: 8px 16px;
+            margin: 0 5px; /* Space between buttons */
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #guide-text {
+            background-color: #f0f0f0; /* Light gray background */
+            color: #333; /* Dark text color */
+            padding: 16dp;
+            text-align: left;
+            font-size: 16sp;
+        }
+    </style>
+</head>
+<body>
+
+    <TextView id="guide-text">
+        ตัวอย่าง Input:<br>
+        - สวัสดี<br>
+        - hello<br>
+        - generative ai<br>
+        - what is chatgpt<br>
+        - google gemini คืออะไร<br>
+        - claude ai คืออะไร<br>
+        - what is a chatbot<br>
+        - nlp คืออะไร<br>
+        - what is huggingface<br>
+        - kaggle คืออะไร<br>
+        - ai ในการศึกษา<br>
+        - examples of ai in education<br>
+        - 2 + 2<br>
+        - 5 - 3<br>
+        - 4 * 6<br>
+        - 10 / 2<br>
+        - sqrt(16)<br><br>
+        ตัวอย่าง Output:<br>
+        - สวัสดีค่ะ มีอะไรให้ฉันช่วยเหลือเกี่ยวกับ AI ในด้านการศึกษาบ้างคะ<br>
+        - Hi there! How can I help you with AI in education?<br>
+        - Generative AI เป็น AI ประเภทหนึ่งที่สามารถสร้างเนื้อหาใหม่ได้ เช่น ข้อความ รูปภาพ หรือแม้แต่โค้ด<br>
+        - ChatGPT is a large language model chatbot trained by Google.<br>
+        - Google Gemini เป็นแบบจำลองภาษาขนาดใหญ่ ฝึกฝนโดย Google<br>
+        - Claude AI เป็นแชทบอทที่พัฒนาโดย Anthropic<br>
+        - A chatbot is an AI program that can simulate conversation with human users.<br>
+        - NLP ย่อมาจาก Natural Language Processing เป็นสาขาหนึ่งของ AI ที่เน้นการทำให้คอมพิวเตอร์เข้าใจและประมวลผลภาษาของมนุษย์<br>
+        - Hugging Face is a platform that provides tools and resources for natural language processing and machine learning.<br>
+        - Kaggle เป็นแพลตฟอร์มสำหรับการแข่งขันวิทยาศาสตร์ข้อมูลและการเรียนรู้ของเครื่อง<br>
+        - AI ในการศึกษามีประโยชน์มากมาย เช่น การเรียนรู้แบบปรับให้เป็นส่วนตัว การสอนแบบตัวต่อตัว และเครื่องมือสำหรับการสร้างแหล่งข้อมูลทางการศึกษา<br>
+        - Examples of AI in education include personalized learning platforms, AI tutors, and tools for creating educational resources.<br>
+        - 4<br>
+        - 2<br>
+        - 24<br>
+        - 5<br>
+        - 4
+    </TextView>
+
+    <div id="chat-container">
+        <div id="chat-messages">
+            </div>
+        <div>
+            <input type="text" id="user-input" placeholder="Type your message...">
+            <button id="send-button">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chat-messages');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+
+        sendButton.addEventListener('click', sendMessage);
+
+        userInput.addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        function sendMessage() {
+            const userMessage = userInput.value.trim();
+            if (userMessage !== "") {
+                displayMessage(userMessage, 'user');
+                userInput.value = "";
+
+                // Send user message to Flask server and get response
+                fetch('/get_response', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `user_message=${userMessage}`
+                })
+                .then(response => response.text())
+                .then(botResponse => {
+                    displayMessage(botResponse, 'bot');
+                })
+                .catch(error => {
+                    console.error('Error fetching response:', error);
+                    displayMessage('An error occurred. Please try again later.', 'bot');
+                });
+            }
+        }
+
+        function displayMessage(message, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', `${sender}-message`);
+
+            // Use innerHTML for bot messages to allow links
+            if (sender === 'bot') {
+                messageDiv.innerHTML = `<div class="message-bubble">${message}</div>`;
+            } else {
+                messageDiv.textContent = message;
+            }
+
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight; // Auto-scroll to bottom
+        }
+    </script>
+
+</body>
+</html>
